@@ -23,15 +23,22 @@ const gatepassSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    from: {
+    outTime: {
         type: String,
         trim: true,
         required: true
     },
-    to: {
+    outDate: {
+        type: Date,
+        required: true
+    },
+    inTime: {
         type: String,
         trim: true,
         required: true
+    }, 
+    inDate: {
+        type: Date,
     }
 })
 
