@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
+require("dotenv").config();
 
-const dbConnect = () => {
-    mongoose.connect(MONGODB_URL)
+exports.dbConnect = () => {
+    mongoose.connect(process.env.MONGODB_URL)
     .then(console.log("DB Connected"))
-    .catch(console.log("Error in DB Connection"));
+    .catch((err) => {
+        console.error(err);
+        console.log("DB connextion issues");
+        process.exit(1);
+    });
 }
-
-module.exports = dbConnect;
