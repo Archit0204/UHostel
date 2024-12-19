@@ -1,12 +1,13 @@
-const express = require("express");
-require("dotenv").config();
-const cookieParser = require("cookie-parser");
-const {dbConnect} = require("./config/Database");
-const adminRoutes = require("./routes/AdminRoutes");
-const studentRoutes = require("./routes/StudentRoutes");
+import express from 'express';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import { dbConnect } from './config/Database';
+import adminRoutes from './routes/AdminRoutes';
+import studentRoutes from './routes/StudentRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 4001
+dotenv.config();
 
 // middlewares
 app.use(express.json());
