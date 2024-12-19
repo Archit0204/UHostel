@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const gatepassSchema = new mongoose.Schema({
     leaveType: {
@@ -7,7 +7,8 @@ const gatepassSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Approved", "Rejected", "Pending"]
+        enum: ["Approved", "Rejected", "Pending"],
+        default: "Pending"
     },
     reason: {
         type: String,
@@ -17,11 +18,13 @@ const gatepassSchema = new mongoose.Schema({
     executioner: { 
         // person who will aprrove/reject
         type: mongoose.Types.ObjectId,
-        ref: "Admin"
+        ref: "Admin",
+        default: null
     },
     comments: {
         type: String,
         trim: true,
+        default: null
     },
     outTime: {
         type: String,
@@ -42,4 +45,4 @@ const gatepassSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model("Gatepass", gatepassSchema);
+export default mongoose.model("Gatepass", gatepassSchema);

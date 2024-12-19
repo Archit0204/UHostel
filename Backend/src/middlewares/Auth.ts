@@ -1,10 +1,16 @@
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
+import dotenv from 'dotenv';
 
-exports.auth = async(req, res, next) => {
-    try{
+dotenv.config();
 
-        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
+interface AuthRequest extends Request {
+    user?: any;
+}
+
+export const auth = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        const token = req.cookies.token || req.body.token || req.header("Authorization")?.replace("Bearer ", "");
 
         if (!token || token === undefined) {
             return res.status(404).json({
@@ -13,31 +19,27 @@ exports.auth = async(req, res, next) => {
             });
         }
 
-        try{
+        try {
             // verify the token
-            const payload = jwt.verify(token, process.env.JWT_SECRET);
+            const payload = jwt.verify(token, process.env.JWT_SECRET as string);
 
             req.user = payload;
-        }
-        catch(e) {
+            next();
+        } catch (e: any) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid Token"
+                message: "Invalid token"
             });
         }
-
-        next();
-    }
-    catch(err) {
-
+    } catch (err: any) {
         return res.status(500).json({
             success: false,
-            message: "Error in authentication"
+            message: "Internal server error"
         });
     }
-}
+};
 
-exports.isAdmin = async(req, res, next) => {
+export const isAdmin = async(req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
 
     try{
         if  (req.user.role !== 'Admin') {
@@ -56,7 +58,7 @@ exports.isAdmin = async(req, res, next) => {
     }
 }
 
-exports.isStudent = async(req, res, next) => {
+export const isStudent = async(req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
 
     try{
         if (req.user.role !== "Student") {
