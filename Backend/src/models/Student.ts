@@ -15,15 +15,17 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        unique: true
     },
     password: {
         type: String,
         required: true,
         trim: true
     },
-    rollNumber: {
-        type: Number,
-        trim: true
+    username: {
+        type: String,
+        trim: true,
+        unique: true
     },
     fatherName: {
         type: String,
