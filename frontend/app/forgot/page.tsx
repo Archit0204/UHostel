@@ -1,11 +1,37 @@
 "use client"
 import Branding from "@/components/Branding";
+import axios, { isAxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CiUser } from "react-icons/ci";
 
 export default function Forgot() {
 
+    const router = useRouter();
+
     const [username, setUsername] = useState("");
+
+    async function submitHandler(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        try {
+            
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/student/forgot`, {
+                username: username
+            }, {
+                withCredentials: true
+            });
+
+            if (res.status === 200) {
+                router.push("/")
+            }
+
+        } catch (error: any) {
+            if (isAxiosError(error)) {
+                console.log(error.response?.data);
+            }
+        }
+    }
 
     return (
         <div className="w-full min-h-screen text-black bg-customBlueBg flex flex-col items-center gap-y-4">
@@ -17,7 +43,7 @@ export default function Forgot() {
                 </div>
             </div>
             <div className="flex flex-col items-center w-full gap-y-2">
-                <form className="flex flex-col items-center gap-y-6">
+                <form onSubmit={submitHandler} className="flex flex-col items-center gap-y-6">
                     <div className="relative w-full">
                         <CiUser className="absolute left-4 top-3 text-2xl font-medium" />
                         <input type="text" name="username" id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username"
