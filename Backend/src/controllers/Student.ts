@@ -62,7 +62,7 @@ export const studentLogin = async (req: Request, res: Response): Promise<any> =>
             return res.cookie("token", token, {
                 expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 sameSite: "none"
             }).status(200).json({
                 success: true,
