@@ -284,3 +284,34 @@ export const resetPassword = async (req: Request, res: Response): Promise<any> =
         });
     }
 }
+
+export const getUser = async (req: AuthRequest, res: Response): Promise<any> => {
+
+    try {
+        
+        const studentId = req.user.id;
+        
+        const student = await Student.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        student.password = undefined;
+
+        return res.status(200).json({
+            success: true,
+            message: "Student Fetched",
+            studentData: student
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
