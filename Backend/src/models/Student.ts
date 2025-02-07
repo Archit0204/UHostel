@@ -43,6 +43,9 @@ const studentSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    avatar: {
+        type: String,
+    },
     gatepass: [
         {
             type: mongoose.Types.ObjectId,

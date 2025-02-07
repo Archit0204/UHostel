@@ -34,7 +34,8 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
     } catch (err: any) {
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
+            error: err.message
         });
     }
 };
