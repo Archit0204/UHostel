@@ -14,7 +14,7 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    // `origin: ['http://localhost:3000', 'https://9f9d-2401-4900-1c71-d4b5-6129-dd5d-c21d-679d.ngrok-free.app'],
+    origin: [`${process.env.CLIENT_URL}`],
     credentials: true
 }));
 
