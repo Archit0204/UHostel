@@ -99,21 +99,32 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<a
         // get id of the student
         const studentId = req.user.id;
 
+        const student = await Student.findById(studentId);
+
         // match new password
         if (newPassword === confirmPassword) {
             // hash the password
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            // update the password in DB
-            await Student.findByIdAndUpdate(studentId, {
-                password: hashedPassword
-            });
+            if (await bcrypt.compare(currentPassword, student?.password as string)) {
+                
+                // update the password in DB
+                await Student.findByIdAndUpdate(studentId, {
+                    password: hashedPassword
+                });
+    
+                // send response
+                return res.status(200).json({
+                    success: true,
+                    message: "Password Updated"
+                });
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: "Incorrect Password"
+                });
+            }
 
-            // send response
-            return res.status(200).json({
-                success: true,
-                message: "Password Updated"
-            });
         } else {
             return res.status(400).json({
                 success: false,

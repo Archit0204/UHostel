@@ -1,19 +1,40 @@
 import Image from "next/image";
 import profile from "@/public/profile.jpg";
 import logout from "@/public/logout-red.png";
+import axios, { isAxiosError } from "axios";
 
-type StudentData = {
-    firstName: string | undefined;
-    lastName: string | undefined;
-    fatherName: string | undefined;
-    username: string | undefined;
-    course: string | undefined;
-    campus: string | undefined;
-    year: number | undefined;
-    avatar: string | undefined
-}
+type Cookie = {
+    name: string,
+    value: string
+};
 
-export default function InfoPanel({studentData}: {studentData: StudentData}) {
+export default async function InfoPanel({ token }: { token: Cookie }) {
+
+    let studentData = null;
+    try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/student/user`, {
+            headers: {
+                "Authorization": `Bearer ${token?.value}`
+            },
+            withCredentials: true
+        });
+
+        studentData = response.data.studentData;
+    } catch (error: any) {
+        console.log("Error fetching user data:", error);
+
+        if (isAxiosError(error)) {
+            console.log(error.response?.data);
+            
+        }
+        
+        // fallack UI
+        return (
+            <div>
+                Error Fetching Data
+            </div>
+        )
+    }
 
     return (
         <div className="flex w-full items-center rounded-md uppercase justify-between border border-gray-200 border-l-4 border-l-customRed bg-white py-4 px-6 shadow-md">
