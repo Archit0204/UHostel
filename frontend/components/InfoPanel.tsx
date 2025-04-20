@@ -12,7 +12,7 @@ export default async function InfoPanel({ student }: { student: Student }) {
                 <Image src={user} alt="Profile" className="rounded-full" width={55} height={55} />
                 <div className="text-customTextGray">
                 <h4 className="text-base font-semibold">Hi, {student.firstName} {student.lastName}</h4>
-                <div className="text-sm text-customTextGray font-medium leading-5 uppercase">
+                <div className="text-sm text-customTextGray font-semibold leading-5 uppercase">
                     <p>{student.fatherName}</p>
                     <p>{student.username}</p>
                     <p>{student.year}-{student.campus}-{student.course}</p>
