@@ -1,5 +1,4 @@
-import axios from "axios";
-import { cookies } from "next/headers";
+import axios, { isAxiosError } from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -20,6 +19,7 @@ export default function ApplyForm({toggle, cookies}: FormProps) {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const monthName = months[date.getMonth()];
 
+    const [disabled, setDisabled] = useState(false);
     const [data, setData] = useState({
         leaveType: "Day Out",
         outDate: "",
@@ -51,21 +51,55 @@ export default function ApplyForm({toggle, cookies}: FormProps) {
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
         
-        try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/student/applyGatepass`, {
-                ...data
-            }, {
-                headers: {
-                    Authorization: `Bearer ${cookies?.value}`
-                },
-                withCredentials: true
-            })
-            toast.success("Gatepass applied successfully");
+        toast.promise(
+            async () => {
+                try {
+                    setDisabled(true);
+                    const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/student/applyGatepass`, {
+                        ...data
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${cookies?.value}`
+                        },
+                        withCredentials: true
+                    })
+                    toggle(false);
+                } catch (error: any) {
+                    if (isAxiosError(error)) {
+                        console.log(error.response?.data);
+                    }
+                    throw error;
+                }
+                finally {
+                    setDisabled(false);
+                }
+            },
+            {
+                loading: 'Applying',
+                success: 'Gatepass Applied!',
+                error: 'Error Applying Gatepass!',
+            }
+        );
+
+        // try {
+        //     setDisabled(true);
+        //     const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/student/applyGatepass`, {
+        //         ...data
+        //     }, {
+        //         headers: {
+        //             Authorization: `Bearer ${cookies?.value}`
+        //         },
+        //         withCredentials: true
+        //     })
+        //     toast.success("Gatepass applied successfully");
             
-            toggle(false);
-        } catch (error: any) {
-            toast.error("Unable to apply for gatepass");
-        }
+        //     toggle(false);
+        // } catch (error: any) {
+        //     toast.error("Unable to apply for gatepass");
+        // }
+        // finally {
+        //     setDisabled(false);
+        // }
     }
 
     return (
@@ -120,7 +154,7 @@ export default function ApplyForm({toggle, cookies}: FormProps) {
                         <option value="University Off">University Off</option>
                     </select>
 
-                    <button className="mt-3 bg-customRed text-white px-4 py-2 w-[100px] rounded-md">Submit</button>
+                    <button disabled={disabled} className={`mt-3 ${disabled ? "bg-red-500": "bg-customRed"} text-white px-4 py-2 w-[100px] rounded-md`}>Submit</button>
                 </div>
             </form>
         </div>
