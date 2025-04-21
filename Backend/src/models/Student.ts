@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { string } from "zod";
 
 const studentSchema = new mongoose.Schema({
     firstName: {
@@ -51,7 +52,15 @@ const studentSchema = new mongoose.Schema({
             type: mongoose.Types.ObjectId,
             ref: "Gatepass"
         }
-    ]
+    ],
+    roomNo: {
+        type: String,
+        trim: true,
+    },
+    hostel: {
+        type: String,
+        trim: true,
+    }
 })
 
 export default mongoose.model("Student", studentSchema);

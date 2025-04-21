@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Gatepass from "../models/Gatepass";
-import { changePasswordSchema, studentLoginSchema } from "../utils/validation";
+import { changePasswordSchema, gatepassSchema, studentLoginSchema } from "../utils/validation";
 import sendMail from "../utils/mailer";
 import z from 'zod';
 
@@ -144,6 +144,13 @@ export const applyGatepass = async (req: AuthRequest, res: Response): Promise<an
     try {
         // fetch data
         const { leaveType, reason, outTime, inTime, outDate, inDate } = req.body;
+
+        if (!gatepassSchema.safeParse({leaveType, reason, outTime, inTime, outDate, inDate}).success) {
+            return res.status(400).json({
+                success: true,
+                message: "Invalid Input Fields"
+            });
+        }
 
         // create gatepass
         let newGatepass;
