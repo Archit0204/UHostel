@@ -7,7 +7,9 @@ export interface Student {
     year: string,
     campus: string,
     course: string,
-    gatepass: Gatepass[]
+    gatepass: Gatepass[],
+    roomNo: string,
+    hostel: string
 };
 
 export interface Gatepass {

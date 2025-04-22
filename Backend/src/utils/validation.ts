@@ -17,6 +17,7 @@ export const changePasswordSchema = zod.object({
 });
 
 export const gatepassSchema = zod.object({
+    id: zod.string().optional(),
     leaveType: zod.enum(["Day Out", "Night Out"]),
     reason: zod.string().optional(),
     outTime: zod.string(),

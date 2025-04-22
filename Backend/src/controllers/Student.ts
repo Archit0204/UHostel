@@ -153,16 +153,25 @@ export const applyGatepass = async (req: AuthRequest, res: Response): Promise<an
         }
 
         // create gatepass
-        let newGatepass;
-        if (inDate) {
-            newGatepass = await Gatepass.create({
-                leaveType, reason, outDate, outTime, inDate, inTime
-            });
-        } else {
-            newGatepass = await Gatepass.create({
-                leaveType, reason, inTime, outDate, outTime
-            });
-        }
+        // let newGatepass;
+        // if (inDate) {
+        //     newGatepass = await Gatepass.create({
+        //         leaveType, reason, outDate, outTime, inDate, inTime
+        //     });
+        // } else {
+        //     newGatepass = await Gatepass.create({
+        //         leaveType, reason, inTime, outDate, outTime
+        //     });
+        // }
+
+        const newGatepass = await Gatepass.create({
+            leaveType,
+            reason,
+            outTime,
+            outDate,
+            inTime,
+            inDate: leaveType === "Day Out" ? null : inDate
+        })
 
         // store gatepass in student
         const studentId = req.user.id;
@@ -191,6 +200,42 @@ export const applyGatepass = async (req: AuthRequest, res: Response): Promise<an
         });
     }
 };
+
+export const editGatepass = async (req: Request, res: Response): Promise<any> => {
+
+    try {
+        
+        const { id, leaveType, reason, outTime, inTime, outDate, inDate } = req.body;
+
+        if (!gatepassSchema.safeParse({id, leaveType, reason, outTime, inTime, outDate, inDate}).success) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Input Fields"
+            });
+        }
+
+        const gatepass = await Gatepass.findByIdAndUpdate(id, {
+            leaveType, 
+            reason, 
+            outTime, 
+            inTime, 
+            outDate, 
+            inDate: leaveType === "Day Out" ? null : inDate
+        }, { new: true });
+        
+        return res.status(200).json({
+            success: true,
+            message: "Gatepass Edited Successfully",
+            gatepass
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Error editing gatepass"
+        });
+    }
+}
 
 export const showAllGatepass = async (req: AuthRequest, res: Response): Promise<any> => {
     try {

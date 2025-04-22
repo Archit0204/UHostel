@@ -19,7 +19,10 @@ export default {
         customBlue: "#007bff",
         customMidGray: "#B5B5B5",
         customGreen: "#339900",
-        customTextGray: "#545454"
+        customTextGray: "#545454",
+        customYellow: "#ffc107",
+        customDarkBlueBg: "#87CEEB",
+        customCyan: "#F0FFFF"
       },
     },
   },
