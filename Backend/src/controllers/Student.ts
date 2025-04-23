@@ -4,12 +4,14 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Gatepass from "../models/Gatepass";
-import { changePasswordSchema, studentLoginSchema } from "../utils/validation";
+import { changePasswordSchema, gatepassSchema, studentLoginSchema } from "../utils/validation";
+import sendMail from "../utils/mailer";
+import z from 'zod';
 
 dotenv.config();
 
 interface JwtPayload {
-    rollNumber: string;
+    username: string;
     id: string;
     role: string;
 }
@@ -21,10 +23,10 @@ interface AuthRequest extends Request {
 export const studentLogin = async (req: Request, res: Response): Promise<any> => {
     try {
         // fetch data
-        const { rollNumber, password } = req.body;
-
+        const { username, password } = req.body;
+        
         // validation
-        if (!studentLoginSchema.safeParse({rollNumber, password}).success) {
+        if (!studentLoginSchema.safeParse({username, password}).success) {
             return res.status(403).json({
                 success: false,
                 message: "Invalid Input Fields"
@@ -32,7 +34,7 @@ export const studentLogin = async (req: Request, res: Response): Promise<any> =>
         }
 
         // check if the user exists for that rollNum
-        const student = await Student.findOne({ rollNumber: rollNumber });
+        const student = await Student.findOne({ username: username });
 
         if (!student) {
             return res.status(404).json({
@@ -45,7 +47,7 @@ export const studentLogin = async (req: Request, res: Response): Promise<any> =>
         if (await bcrypt.compare(password, student.password as string)) {
             // create token
             const payload: JwtPayload = {
-                rollNumber: rollNumber,
+                username: username,
                 id: (student._id as object).toString(),
                 role: "Student"
             };
@@ -59,7 +61,9 @@ export const studentLogin = async (req: Request, res: Response): Promise<any> =>
 
             return res.cookie("token", token, {
                 expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
-                httpOnly: true
+                httpOnly: true,
+                secure: true,
+                sameSite: "none"
             }).status(200).json({
                 success: true,
                 message: "Student Logged In",
@@ -95,21 +99,32 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<a
         // get id of the student
         const studentId = req.user.id;
 
+        const student = await Student.findById(studentId);
+
         // match new password
         if (newPassword === confirmPassword) {
             // hash the password
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            // update the password in DB
-            await Student.findByIdAndUpdate(studentId, {
-                password: hashedPassword
-            });
+            if (await bcrypt.compare(currentPassword, student?.password as string)) {
+                
+                // update the password in DB
+                await Student.findByIdAndUpdate(studentId, {
+                    password: hashedPassword
+                });
+    
+                // send response
+                return res.status(200).json({
+                    success: true,
+                    message: "Password Updated"
+                });
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: "Incorrect Password"
+                });
+            }
 
-            // send response
-            return res.status(200).json({
-                success: true,
-                message: "Password Updated"
-            });
         } else {
             return res.status(400).json({
                 success: false,
@@ -130,17 +145,33 @@ export const applyGatepass = async (req: AuthRequest, res: Response): Promise<an
         // fetch data
         const { leaveType, reason, outTime, inTime, outDate, inDate } = req.body;
 
-        // create gatepass
-        let newGatepass;
-        if (inDate) {
-            newGatepass = await Gatepass.create({
-                leaveType, reason, outDate, outTime, inDate, inTime
-            });
-        } else {
-            newGatepass = await Gatepass.create({
-                leaveType, reason, inTime, outDate, outTime
+        if (!gatepassSchema.safeParse({leaveType, reason, outTime, inTime, outDate, inDate}).success) {
+            return res.status(400).json({
+                success: true,
+                message: "Invalid Input Fields"
             });
         }
+
+        // create gatepass
+        // let newGatepass;
+        // if (inDate) {
+        //     newGatepass = await Gatepass.create({
+        //         leaveType, reason, outDate, outTime, inDate, inTime
+        //     });
+        // } else {
+        //     newGatepass = await Gatepass.create({
+        //         leaveType, reason, inTime, outDate, outTime
+        //     });
+        // }
+
+        const newGatepass = await Gatepass.create({
+            leaveType,
+            reason,
+            outTime,
+            outDate,
+            inTime,
+            inDate: leaveType === "Day Out" ? null : inDate
+        })
 
         // store gatepass in student
         const studentId = req.user.id;
@@ -170,6 +201,42 @@ export const applyGatepass = async (req: AuthRequest, res: Response): Promise<an
     }
 };
 
+export const editGatepass = async (req: Request, res: Response): Promise<any> => {
+
+    try {
+        
+        const { id, leaveType, reason, outTime, inTime, outDate, inDate } = req.body;
+
+        if (!gatepassSchema.safeParse({id, leaveType, reason, outTime, inTime, outDate, inDate}).success) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Input Fields"
+            });
+        }
+
+        const gatepass = await Gatepass.findByIdAndUpdate(id, {
+            leaveType, 
+            reason, 
+            outTime, 
+            inTime, 
+            outDate, 
+            inDate: leaveType === "Day Out" ? null : inDate
+        }, { new: true });
+        
+        return res.status(200).json({
+            success: true,
+            message: "Gatepass Edited Successfully",
+            gatepass
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Error editing gatepass"
+        });
+    }
+}
+
 export const showAllGatepass = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const studentId = req.user.id;
@@ -192,3 +259,122 @@ export const showAllGatepass = async (req: AuthRequest, res: Response): Promise<
         });
     }
 };
+
+export const forgotPassword = async (req: Request, res: Response): Promise<any> => {
+
+    try {
+        const { username } = req.body;
+        
+        let student: any;
+        if (z.string().email().safeParse(username).success) {
+            student = await Student.findOne({ email: username });
+        }
+        else {
+            student = await Student.findOne({ username });
+        }
+        
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student does not exist"
+            });
+        }
+
+        const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET as string, {
+            expiresIn: "10m"
+        });
+
+        const url = `${process.env.CLIENT_URL}/reset-password/${token}`;
+
+        await sendMail(student.email as string, "Reset Password", url);
+
+        return res.status(200).json({
+            success: true,
+            message: "Reset Password Link Sent"
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Error while sending mail"
+        });
+    }
+}
+
+export const resetPassword = async (req: Request, res: Response): Promise<any> => {
+    try {
+        
+        const { token } = req.params;
+        const { password, confirmPassword} = req.body;
+
+        if (!password || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Input Fields"
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(401).json({
+                success: false,
+                message: "Passwords do not match"
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+
+        if (!decoded) {
+            return res.status(404).json({
+                success: false,
+                message: "Invalid Token"
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const student = await Student.findByIdAndUpdate((decoded as any).id, {
+            password: hashedPassword
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Password Reset Successfully"
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+export const getUser = async (req: AuthRequest, res: Response): Promise<any> => {
+
+    try {
+        
+        const studentId = req.user.id;
+        
+        const student = await Student.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        student.password = undefined;
+
+        return res.status(200).json({
+            success: true,
+            message: "Student Fetched",
+            studentData: student
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}

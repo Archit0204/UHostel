@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { string } from "zod";
 
 const studentSchema = new mongoose.Schema({
     firstName: {
@@ -15,15 +16,17 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        unique: true
     },
     password: {
         type: String,
         required: true,
         trim: true
     },
-    rollNumber: {
-        type: Number,
-        trim: true
+    username: {
+        type: String,
+        trim: true,
+        unique: true
     },
     fatherName: {
         type: String,
@@ -41,12 +44,23 @@ const studentSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    avatar: {
+        type: String,
+    },
     gatepass: [
         {
             type: mongoose.Types.ObjectId,
             ref: "Gatepass"
         }
-    ]
+    ],
+    roomNo: {
+        type: String,
+        trim: true,
+    },
+    hostel: {
+        type: String,
+        trim: true,
+    }
 })
 
 export default mongoose.model("Student", studentSchema);

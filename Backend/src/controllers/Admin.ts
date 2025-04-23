@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Student from "../models/Student";
 import dotenv from "dotenv";
-import { adminSignupSchema, studentSchema } from "../utils/validation";
+import { adminLoginSchema, adminSignupSchema, studentSchema } from "../utils/validation";
 
 dotenv.config();
 
@@ -58,7 +58,7 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
         const { email, password } = req.body;
 
         // data validation
-        if (!adminSignupSchema.safeParse({ email, password }).success) {
+        if (!adminLoginSchema.safeParse({ email, password }).success) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid Input Fields"
@@ -114,9 +114,9 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
 export const createStudent = async (req: Request, res: Response): Promise<any> => {
     try {
         // fetch data
-        const { firstName, lastName, email, rollNumber, fatherName, year, course, campus } = req.body;
+        const { firstName, lastName, email, username, fatherName, year, course, campus } = req.body;
         // validate data
-        if (!studentSchema.safeParse({ firstName, lastName, email, rollNumber, fatherName, year, course, campus }).success) {
+        if (!studentSchema.safeParse({ firstName, lastName, email, username, fatherName, year, course, campus }).success) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid Input Fields"
@@ -124,7 +124,7 @@ export const createStudent = async (req: Request, res: Response): Promise<any> =
         }
 
         // check if student exists
-        const existingStudent = await Student.findOne({ rollNumber: rollNumber });
+        const existingStudent = await Student.findOne({ username: username });
 
         if (existingStudent) {
             return res.status(403).json({
@@ -135,7 +135,7 @@ export const createStudent = async (req: Request, res: Response): Promise<any> =
 
         // create password and hash it
         let yearString = year.toString();
-        let passSeq = rollNumber + "@" + yearString.slice(2);
+        let passSeq = username + "@" + yearString.slice(2);
 
         const hashedPassword = await bcrypt.hash(passSeq, 10);
 
@@ -143,7 +143,7 @@ export const createStudent = async (req: Request, res: Response): Promise<any> =
         const student = await Student.create({
             firstName, lastName, email,
             password: hashedPassword,
-            rollNumber,
+            username,
             year, fatherName, course, campus
         });
 

@@ -6,7 +6,7 @@ export const adminLoginSchema = zod.object({
 });
 
 export const studentLoginSchema = zod.object({
-    rollNumber: zod.number(),
+    username: zod.string(),
     password: zod.string().min(8)
 });
 
@@ -17,6 +17,7 @@ export const changePasswordSchema = zod.object({
 });
 
 export const gatepassSchema = zod.object({
+    id: zod.string().optional(),
     leaveType: zod.enum(["Day Out", "Night Out"]),
     reason: zod.string().optional(),
     outTime: zod.string(),
@@ -35,7 +36,7 @@ export const studentSchema = zod.object({
     firstName: zod.string(),
     lastName: zod.string().optional(),
     email: zod.string().email(),
-    rollNumber: zod.number(),
+    username: zod.string(),
     fatherName: zod.string(),
     year: zod.number().int().min(2020).max(2024),
     campus: zod.enum(["CUP", "CUHP"]),
