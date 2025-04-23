@@ -2,11 +2,12 @@ import Footer from "@/components/Footer";
 import GatepassContainer from "@/components/GContainer";
 import InfoPanel from "@/components/InfoPanel";
 import Navbar from "@/components/Navbar";
+import PaymentContainer from "@/components/PaymentContainer";
 import axios, { isAxiosError } from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function Gatepass() {
+export default async function PaymentReceipt() {
 
     const cookie = await cookies();
     const token = cookie.get("token"); 
@@ -42,7 +43,7 @@ export default async function Gatepass() {
             <Navbar />
             <div className="flex-grow flex flex-col w-screen items-center px-4 md:px-16 mt-6 gap-2 mb-28 md:mb-0 md:gap-8">
                 <InfoPanel student={studentData}/>
-                <GatepassContainer cookies={token}/>
+                <PaymentContainer />
             </div>
             <Footer />
         </div>
