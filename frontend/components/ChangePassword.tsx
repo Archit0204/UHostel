@@ -7,7 +7,7 @@ type Cookie = {
     value: string
 };
 
-export default function changePassword({ token }: { token: Cookie }) {
+export default function ChangePassword({ token }: { token: Cookie }) {
 
     const [passwordData, setPasswordData] = useState({
         current: "", new: "", confirm: ""

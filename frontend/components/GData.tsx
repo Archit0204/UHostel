@@ -42,7 +42,7 @@ export default function GatepassData({ cookies, setToggle, setFormType, setGatep
         };
 
         fetchGatepassData();
-    }, []);
+    });
 
     const editHandler = (data: Gatepass) => {
         setGatepass(data);
