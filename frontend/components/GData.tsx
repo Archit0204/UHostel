@@ -19,9 +19,6 @@ export default function GatepassData({ cookies, setToggle, setFormType, setGatep
 
     const [gatepassData, setGatepassData] = useState<Gatepass[]>([]);
     const [userData, setUserData] = useState<Student | null>(null);
-    // const setGatepass = useSetRecoilState(gatepassState);
-    // const setToggle = useSetRecoilState(toggleApplyState);
-    // const setFormType = useSetRecoilState(applyFormType);
 
     useEffect(() => {
         const fetchGatepassData = async () => {
