@@ -60,7 +60,13 @@ const studentSchema = new mongoose.Schema({
     hostel: {
         type: String,
         trim: true,
-    }
+    },
+    complaint: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "Complaint"
+        }
+    ]
 })
 
 export default mongoose.model("Student", studentSchema);

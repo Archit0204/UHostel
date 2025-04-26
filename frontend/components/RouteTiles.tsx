@@ -9,7 +9,7 @@ export default function RouteTiles() {
             <DashTile title="Non-Disciplinary Action" description="Extra Dues for Non-Disciplinary Action" route="finecollection"/>
             <DashTile title="New Semester Allotment (Room Booking)" description="Only limited number of rooms are available which will be allotted on first come first serve basis based upon the date and time of registration. The room will be allotted after physical verification of documents." route="newallotment"/>
             <DashTile title="Hostel Checkout" description="Hostel Checkout" route="hostelcheckout"/>
-            <DashTile title="Complaint" description="Complaint" route="studentComaplaint"/>
+            <DashTile title="Complaint" description="Complaint" route="studentComplaint"/>
             <DashTile title="Admission Form" description="Admission Form" route="admissionForm"/>
         </div>
     )

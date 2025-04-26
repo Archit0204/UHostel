@@ -9,7 +9,8 @@ export interface Student {
     course: string,
     gatepass: Gatepass[],
     roomNo: string,
-    hostel: string
+    hostel: string,
+    complaint: Complaint[],
 };
 
 export interface Gatepass {
@@ -23,4 +24,17 @@ export interface Gatepass {
     outDate: string,
     inTime: string,
     inDate: string
+}
+
+export interface Complaint {
+    _id: string;
+    studentName: string;
+    studentId: string;
+    hostel: string;
+    roomNo: string;
+    category: string;
+    type: string;
+    remarks: string;
+    wardenRemarks: string | null;
+    status: "Pending" | "Closed";
 }

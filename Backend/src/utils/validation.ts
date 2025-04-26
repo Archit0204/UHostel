@@ -1,4 +1,4 @@
-import zod, { z } from "zod";
+import zod from "zod";
 
 export const adminLoginSchema = zod.object({
     email: zod.string().email(),
@@ -41,4 +41,16 @@ export const studentSchema = zod.object({
     year: zod.number().int().min(2020).max(2024),
     campus: zod.enum(["CUP", "CUHP"]),
     course: zod.string()
+});
+
+export const complaintSchema = zod.object({
+    studentName: zod.string(),
+    studentId: zod.string(),
+    hostel: zod.string(),
+    roomNo: zod.string(),
+    category: zod.string(),
+    type: zod.string(),
+    remarks: zod.string(),
+    wardenRemarks: zod.string().nullable().optional(),
+    status: zod.enum(["Pending", "Closed"]).default("Pending")
 });

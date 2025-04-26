@@ -4,9 +4,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Gatepass from "../models/Gatepass";
-import { changePasswordSchema, gatepassSchema, studentLoginSchema } from "../utils/validation";
+import { changePasswordSchema, complaintSchema, gatepassSchema, studentLoginSchema } from "../utils/validation";
 import sendMail from "../utils/mailer";
 import z from 'zod';
+import Complaint from "../models/Complaint";
 
 dotenv.config();
 
@@ -151,18 +152,6 @@ export const applyGatepass = async (req: AuthRequest, res: Response): Promise<an
                 message: "Invalid Input Fields"
             });
         }
-
-        // create gatepass
-        // let newGatepass;
-        // if (inDate) {
-        //     newGatepass = await Gatepass.create({
-        //         leaveType, reason, outDate, outTime, inDate, inTime
-        //     });
-        // } else {
-        //     newGatepass = await Gatepass.create({
-        //         leaveType, reason, inTime, outDate, outTime
-        //     });
-        // }
 
         const newGatepass = await Gatepass.create({
             leaveType,
@@ -369,6 +358,74 @@ export const getUser = async (req: AuthRequest, res: Response): Promise<any> => 
             success: true,
             message: "Student Fetched",
             studentData: student
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+export const raiseComplaint = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        
+        const { studentName, studentId, hostel, roomNo, category, type, remarks } = req.body;
+
+        if (!complaintSchema.safeParse({studentName, studentId, hostel, roomNo, category, type, remarks}).success) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Input Fields"
+            });
+        }
+
+        const complaint = await Complaint.create({
+            studentName,
+            studentId,
+            hostel,
+            roomNo,
+            category,
+            type,
+            remarks
+        });
+
+        const userId = req.user.id;
+
+        await Student.findByIdAndUpdate(userId, {
+            $push: {
+                complaint: complaint._id
+            }
+        }, { new: true });
+
+        return res.status(200).json({
+            success: true,
+            message: "Compaint Raised Successfully"
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+export const getComplaints = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        
+        const userId = req.user.id;
+
+        const complaints = await Student.findById(userId).populate("complaint").exec();
+
+        if (complaints) {
+            complaints.password = undefined;
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Complaints Fetched",
+            data: complaints
         });
 
     } catch (error: any) {
