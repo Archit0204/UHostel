@@ -93,7 +93,7 @@ export default function GatepassData({ cookies, setToggle, setFormType, setGatep
                                                 </td>
                                                 <td>
                                                     <div className="py-3">
-                                                        <p className={`uppercase font-semibold ${data.status === "Pending" ? "text-customDarkBlueBg": data.status === "Rejected" ? "text-customRed": "text-customGreen"}`}>{data.status}</p>
+                                                        <p className={`uppercase font-semibold ${data.status === "Pending" ? "text-indigo-900": data.status === "Rejected" ? "text-customRed": "text-customGreen"}`}>{data.status === "Pending" ? "New Request": data.status}</p>
                                                         <div className="bg-customCyan">
                                                             <p>{userData?.hostel}</p>
                                                             <p>{userData?.roomNo}</p>

@@ -435,3 +435,33 @@ export const getComplaints = async (req: AuthRequest, res: Response): Promise<an
         });
     }
 }
+
+export const studentCheckout = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        
+        const studentId = req.user.id;
+        const { hasApplied } = req.body;
+        
+        if (hasApplied === undefined) {
+            return res.status(404).json({
+                success: false,
+                message: "Inavlid Input Fields"
+            });
+        }
+
+        await Student.findByIdAndUpdate(studentId, {
+            checkoutApplied: !hasApplied
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Application Submitted/Withdrawn"
+        });
+        
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}

@@ -66,7 +66,11 @@ const studentSchema = new mongoose.Schema({
             type: mongoose.Types.ObjectId,
             ref: "Complaint"
         }
-    ]
+    ],
+    checkoutApplied: {
+        type: Boolean,
+        default: false
+    }
 })
 
 export default mongoose.model("Student", studentSchema);

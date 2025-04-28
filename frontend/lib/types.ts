@@ -11,6 +11,7 @@ export interface Student {
     roomNo: string,
     hostel: string,
     complaint: Complaint[],
+    checkoutApplied: boolean,
 };
 
 export interface Gatepass {
