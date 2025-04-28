@@ -11,8 +11,8 @@ export default async function InfoPanel({ student }: { student: Student }) {
             <div className="flex items-center gap-4">
                 <Image src={user} alt="Profile" className="rounded-full" width={55} height={55} />
                 <div className="text-customTextGray">
-                <h4 className="text-base font-semibold">Hi, {student.firstName} {student.lastName}</h4>
-                <div className="text-sm text-customTextGray font-semibold leading-5 uppercase">
+                <h4 className="text-lg font-semibold">Hi, {student.firstName} {student.lastName}</h4>
+                <div className="text-base text-customTextGray font-semibold leading-5 uppercase">
                     <p>{student.fatherName}</p>
                     <p>{student.username}</p>
                     <p>{student.year}-{student.campus}-{student.course}</p>

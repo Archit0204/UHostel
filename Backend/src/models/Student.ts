@@ -60,6 +60,16 @@ const studentSchema = new mongoose.Schema({
     hostel: {
         type: String,
         trim: true,
+    },
+    complaint: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "Complaint"
+        }
+    ],
+    checkoutApplied: {
+        type: Boolean,
+        default: false
     }
 })
 
