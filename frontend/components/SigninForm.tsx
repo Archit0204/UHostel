@@ -32,8 +32,9 @@ export default function SigninForm() {
                     const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/student/login`, signinData, {
                         withCredentials: true
                     });
-                    
-                    router.push("/studentdashboard")
+
+                    // router.push("/studentdashboard")
+                    window.location.href = "/studentdashboard";
 
                 } catch (error: any) {
                     if (isAxiosError(error)) {

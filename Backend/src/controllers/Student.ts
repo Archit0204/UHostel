@@ -64,7 +64,8 @@ export const studentLogin = async (req: Request, res: Response): Promise<any> =>
                 expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
                 httpOnly: true,
                 secure: true,
-                sameSite: "none"
+                sameSite: "none",
+                domain: ".architmittal.dev"
             }).status(200).json({
                 success: true,
                 message: "Student Logged In",

@@ -91,7 +91,10 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
 
             return res.cookie("token", token, {
                 expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
-                httpOnly: true
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                domain: ".architmittal.dev",
             }).status(200).json({
                 success: true,
                 message: "Admin Logged In Successfully",
