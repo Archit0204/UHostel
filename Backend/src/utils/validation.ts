@@ -54,3 +54,9 @@ export const complaintSchema = zod.object({
     wardenRemarks: zod.string().nullable().optional(),
     status: zod.enum(["Pending", "Closed"]).default("Pending")
 });
+
+export const fineSchema = zod.object({
+    amount: zod.number().positive(),
+    reason: zod.string(),
+    studentId: zod.string(),
+})

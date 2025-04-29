@@ -65,7 +65,7 @@ export const studentLogin = async (req: Request, res: Response): Promise<any> =>
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                domain: ".architmittal.dev"
+                // domain: ".architmittal.dev"
             }).status(200).json({
                 success: true,
                 message: "Student Logged In",
