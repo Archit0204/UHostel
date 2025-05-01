@@ -12,6 +12,7 @@ export interface Student {
     hostel: string,
     complaint: Complaint[],
     checkoutApplied: boolean,
+    fines: Fine[],
 };
 
 export interface Gatepass {
@@ -38,4 +39,13 @@ export interface Complaint {
     remarks: string;
     wardenRemarks: string | null;
     status: "Pending" | "Closed";
+}
+
+export interface Fine {
+    _id: string;
+    amount: number;
+    reason: string;
+    paid: boolean;
+    createdAt: string;
+    updatedAt: string;
 }

@@ -22,7 +22,7 @@ export default function Home() {
 
 
                 <footer className="flex flex-col items-center gap-y-5 justify-end">
-                    <p className="text-customDarkGray font-semibold text-sm">Copyright ©2024 Chitkara University</p>
+                    <p className="text-customDarkGray font-semibold text-sm">Copyright ©2025 Chitkara University</p>
                     <div className="flex text-customBlue text-sm">
                         <p className="px-2 py-1 text-sm font-extralight hover:underline hover:text-customDarkBlue cursor-pointer border-r border-customGray ">About Us</p>
                         <p className="px-2 py-1 text-sm font-extralight hover:underline hover:text-customDarkBlue cursor-pointer border-r border-customGray ">Contact Us</p>

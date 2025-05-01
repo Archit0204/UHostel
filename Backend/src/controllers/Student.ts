@@ -466,3 +466,29 @@ export const studentCheckout = async (req: AuthRequest, res: Response): Promise<
         });
     }
 }
+
+export const getFines = async (req: AuthRequest, res: Response): Promise<any> => {
+    
+    try {
+        
+        const studentId = req.user.id;
+
+        const student = await Student.findById(studentId).populate("fines").exec();
+
+        if (student) {
+            student.password = undefined;
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Fines fetched",
+            data: student
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
