@@ -4,9 +4,15 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Student from "../models/Student";
 import dotenv from "dotenv";
-import { adminLoginSchema, adminSignupSchema, studentSchema } from "../utils/validation";
+import { adminLoginSchema, adminSignupSchema, fineSchema, studentSchema } from "../utils/validation";
+import Fine from "../models/Fine";
+import { z } from "zod";
 
 dotenv.config();
+
+interface AuthRequest extends Request {
+    user?: any;
+}
 
 export const adminSignup = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -164,3 +170,55 @@ export const createStudent = async (req: Request, res: Response): Promise<any> =
         });
     }
 };
+
+export const issueFine = async (req: AuthRequest, res: Response): Promise<any> => {
+    try {
+        
+        const { amount, reason, studentId } = req.body;
+        
+        const adminId = req.user.id;
+
+        if (!fineSchema.safeParse({ amount, reason, studentId }).success) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Input Fields"
+            });
+        }
+
+        const student = await Student.findOne({
+            username: studentId
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student Not Found"
+            });
+        }
+
+        const fine = await Fine.create({
+            amount,
+            reason,
+            student: student._id,
+            issuedBy: adminId
+        });
+
+        await Student.findByIdAndUpdate(student._id, {
+            $push: {
+                fines: fine._id
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Fine Issued Successfully"
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            error: error.message,
+            success: false,
+            message: "Error Issuing Fine"
+        });
+    }
+}

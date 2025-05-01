@@ -70,7 +70,13 @@ const studentSchema = new mongoose.Schema({
     checkoutApplied: {
         type: Boolean,
         default: false
-    }
+    },
+    fines: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "Fine"
+        }
+    ]
 })
 
 export default mongoose.model("Student", studentSchema);

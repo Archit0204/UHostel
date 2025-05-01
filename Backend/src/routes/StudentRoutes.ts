@@ -1,5 +1,5 @@
 import express from 'express';
-import  { studentLogin, changePassword, applyGatepass, showAllGatepass, forgotPassword, resetPassword, getUser, editGatepass, raiseComplaint, getComplaints, studentCheckout } from "../controllers/Student";
+import  { studentLogin, changePassword, applyGatepass, showAllGatepass, forgotPassword, resetPassword, getUser, editGatepass, raiseComplaint, getComplaints, studentCheckout, getFines } from "../controllers/Student";
 import  { auth, isStudent } from "../middlewares/Auth";
 
 const router = express.Router();
@@ -15,5 +15,6 @@ router.put("/edit", auth, isStudent, editGatepass);
 router.post("/complaint", auth, isStudent, raiseComplaint);
 router.get("/complaint", auth, getComplaints);
 router.post("/checkout", auth, isStudent, studentCheckout);
+router.get("/fines", auth, isStudent, getFines);
 
 export default router;
