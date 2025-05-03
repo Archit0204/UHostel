@@ -2,6 +2,7 @@ import Image from "next/image";
 import user from "@/public/user.png";
 import logout from "@/public/logout-red.png";
 import { Student } from "@/lib/types";
+import Link from "next/link";
 
 export default async function InfoPanel({ student }: { student: Student }) {
 
@@ -21,7 +22,9 @@ export default async function InfoPanel({ student }: { student: Student }) {
             </div>
             
             {/* Logout Button */}
-            <Image src={logout} alt="Logout" className="w-6 h-6 cursor-pointer md:hidden" />
+            <Link href="/" className="w-6 h-6 cursor-pointer md:hidden">
+                <Image src={logout} alt="Logout"/>
+            </Link>
         </div>
     );
 }

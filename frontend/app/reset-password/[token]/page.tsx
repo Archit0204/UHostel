@@ -54,7 +54,7 @@ export default function ResetPassword() {
                 <form onSubmit={submitHandler} className="flex flex-col items-center gap-y-6">
                     <div className="relative w-full">
                         <CiLock className="absolute left-4 top-3 text-2xl font-medium" />
-                        <input type="text" name="password" id="password" value={resetPassword.password} onChange={changeHandler} placeholder="Password"
+                        <input type="password" name="password" id="password" value={resetPassword.password} onChange={changeHandler} placeholder="Password"
                         className="w-full py-4 px-16 rounded-md focus:outline-none border text-customDarkGray text-sm border-customGray placeholder:text-sm placeholder:font-medium placeholder:text-customDarkGray"/>
                     </div>
                     <div className="relative w-full">
